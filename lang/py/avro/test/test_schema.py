@@ -517,6 +517,10 @@ IGNORED_LOGICAL_TYPE = [
         {"type": "int", "logicalType": "timestamp-micros"},
         warnings=[avro.errors.IgnoredLogicalType("Logical type timestamp-micros requires literal type long, not int.")],
     ),
+    ValidTestSchema(
+        {"type": {"type": "array", "items": "int"}, "logicalType": "logical-array-int"},
+        warnings=[avro.errors.IgnoredLogicalType("Logical type logical-array-int has unsupported complex subtype.")],
+    ),
 ]
 
 
