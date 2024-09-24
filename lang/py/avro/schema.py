@@ -1208,6 +1208,11 @@ def make_bytes_decimal_schema(other_props):
 
 def make_logical_schema(logical_type, type_, other_props):
     """Map the logical types to the appropriate literal type and schema class."""
+    # all supported logical require string as a subtype
+    if not isinstance(type_, str):
+        warnings.warn(avro.errors.IgnoredLogicalType(f"Logical type {logical_type} has unsupported complex subtype."))
+        return None
+
     logical_types = {
         (avro.constants.DATE, "int"): DateSchema,
         (avro.constants.DECIMAL, "bytes"): make_bytes_decimal_schema,
@@ -1258,6 +1263,9 @@ def make_avsc_object(
             logical_schema = make_logical_schema(logical_type, type_, other_props or {})
             if logical_schema is not None:
                 return cast(Schema, logical_schema)
+            elif not isinstance(type_, str):
+                # we need to recurse both for dict and union type_
+                return make_avsc_object(type_, names, validate_enum_symbols, validate_names)
 
         if type_ in avro.constants.NAMED_TYPES:
             name = json_data.get("name")
